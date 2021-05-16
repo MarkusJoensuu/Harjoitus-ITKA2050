@@ -5,7 +5,7 @@ import queue
 import subprocess
 import threading
 import time
-import os.path
+
 
 
 # Load configuration file
@@ -42,7 +42,7 @@ def checkerLoop(queue):
             os.remove(filename)
             bad_file_log.add(filename)
         else:
-            suspicious_file_log.remove(os.path.abspath(filename))
+            suspicious_file_log.remove(os.path.basename(filename))
 
 
 # Start the background checker thread
