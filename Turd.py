@@ -63,7 +63,7 @@ def login():
     username = request.args.get('user')
     password = request.args.get('password')
     if username:
-
+        username = escape(username) #käytetään FLASKin escapea syötteen sanitointiin.
         if users.get(username) == password:
             
             resp = make_response("""
@@ -78,6 +78,8 @@ def login():
 
             # Create directory for user files
             path = configuration['web_root'] + "/" + username
+            checkPath(path) #loginin polkua ei tarkisteta, eli polku tulisi normalisoida
+            
             if not os.path.exists(path):
                 os.makedirs(path)
             
@@ -124,8 +126,10 @@ def logout():
 
 def checkPath(path):
     """ This will check and prevent path injections """
+    
+    #abspath = os.path.abstpath(path)
     if "../" in path:  #
-        raise Exception("Possible Path-Injection")
+        raise Exception("Possible Path-Injection") #tarkista tarviiko tehdä muutoksia kun käytetään abs.path, esim.startswith.
 
 @app.route('/share_file')
 def share_file():
@@ -138,7 +142,7 @@ def share_file():
 
     user_file = request.args.get('file')
 
-    checkPath(path+"/"+user_file)
+    checkPath(path+"/"+user_file)           #abs.path, startswith username
 
     shared_files[user_file] = path+"/"+user_file
 
